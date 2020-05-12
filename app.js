@@ -77,9 +77,11 @@ $(document).ready(function () {
   });
 
   $(document).on("click", ".cardGiphy", function () {
+    var gifID = $(this).attr("gif-id");
+    console.log(gifID);
     var icon = $(this)[0].children[0];
     icon.classList.add("yellow");
-    url.push($(this)[0].children[1].currentSrc);
+    url.push(gifID);
     window.localStorage.setItem("url", JSON.stringify(url));
   });
 
@@ -98,14 +100,32 @@ $(document).ready(function () {
   // ---------- FUNCTIONS ----------
 
   function renderLocalStorge(tempArray) {
-    for (var i = 0; i < tempArray.length; i++) {
-      posterURL = tempArray[i];
-      $("#results")
-        .append(`<div class="card col-sm-2 m-1" style="height: 230px">
-    <img src="${posterURL}" class="card-img-top mt-3 mx-auto " style="width:150px; height:150px" />
-    <div>   
-    </div>
-  </>`);
+    let unique = [...new Set(tempArray)];
+    console.log(unique);
+    for (var i = 0; i < unique.length; i++) {
+      gif_id = unique[i];
+      console.log(gif_id);
+      $.ajax({
+        type: "GET",
+        url: `https://api.giphy.com/v1/gifs/${gif_id}?api_key=07S9I5BCiB35dZ0afrPbtrBm9M9xMq49`,
+        dataType: "json",
+      }).then(function (response) {
+        console.log(response);
+        posterURL = response.data.images.original.url;
+        $(
+          "#results"
+        ).append(`<div class="card col-sm-2 m-1 cardGiphy" data-id=${i} gif-id=${response.data.id} style="height: 230px">
+            <i class="far fa-star icon"></i>
+        <img src="${posterURL}"class="card-img-top mt-3 mx-auto" style="width:150px; height:150px" />
+        <div>
+          <a class="urltext" class="text-center smallest" href="${response.data.bitly_url}">
+          ${response.data.bitly_url}
+          </a>
+          <div><button type="button" class="linkBtn btn btn-secondary btn-sm" data-url=${response.data.bitly_url}>Copy Giphy URL</button></div>
+        </div>
+        </div>
+      </>`);
+      });
     }
   }
 
@@ -143,8 +163,9 @@ $(document).ready(function () {
     }).then(function (response) {
       for (var i = 0; i < response.data.length; i++) {
         posterURL = response.data[i].images.original.url;
+        console.log(response);
         $("#results")
-          .append(`<div class="card col-sm-2 m-1 cardGiphy" data-id=${i} style="height: 230px">
+          .append(`<div class="card col-sm-2 m-1 cardGiphy" data-id=${i} gif-id=${response.data[i].id} style="height: 230px">
            <i class="far fa-star icon"></i>
         <img src="${posterURL}"class="card-img-top mt-3 mx-auto" style="width:150px; height:150px" />
         <div>
