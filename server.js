@@ -1,6 +1,7 @@
 // Requiring necessary npm packages
+require('dotenv').config()
 var axios = require('axios');
-const { json } = require('express');
+// const { json } = require('express');
 var express = require("express");
 var PORT = process.env.PORT || 8080;
 var path = require("path")
@@ -19,7 +20,7 @@ app.get("/api/giphy", function (req, res) {
   console.log(req)
   var config = {
     method: 'get',
-    url: `https://api.giphy.com/v1/gifs/search?api_key=07S9I5BCiB35dZ0afrPbtrBm9M9xMq49&q=${req.query.string}&limit=20`,
+    url: `https://api.giphy.com/v1/gifs/search?api_key=${process.env.ApiKey}&q=${req.query.string}&limit=20`,
     headers: { }
   };
 
